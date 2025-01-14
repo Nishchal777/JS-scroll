@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Animated Card Layout</title>
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(90deg, #dae85d, #ff6a88, #54229b);
+        font-family: Arial, sans-serif;
+        overflow: hidden;
+      }
+
+      .container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        width: 100vw;
+        height: 100vh;
+        overflow-y: scroll;
+        scroll-snap-type: y mandatory;
+      }
+
+      .card {
+        flex: 0 0 auto;
+        width: 30%;
+        height: 40vh;
+        margin: 20px 0;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        scroll-snap-align: center;
+        transition: transform 0.5s ease, opacity 0.5s ease;
+        opacity: 0.8;
+      }
+
+      .card:hover {
+        transform: scale(1.05);
+        opacity: 1;
+      }
+
+      .card.active {
+        transform: scale(1.3);
+        opacity: 1;
+      }
+
+      .content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 80%;
+        height: 150px;
+        gap: 20px;
+      }
+
+      .circle {
+        flex: 0 0 auto;
+        width: 40px;
+        height: 40px;
+        background-color: rgba(244, 179, 89, 0.699);
+        border-radius: 50%;
+        box-shadow: 3px 3px 3px rgb(255, 255, 255) inset;
+      }
+
+      .lines {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .line1 {
+        width: 100%;
+        height: 20px;
+        background-color: rgba(244, 179, 89, 0.699);
+        border-radius: 10px;
+        box-shadow: 3px 3px 3px rgb(255, 255, 255) inset;
+      }
+
+      .line {
+        width: 50%;
+        height: 10px;
+        background-color: rgba(244, 179, 89, 0.699);
+        border-radius: 20px;
+        box-shadow: 1px 1px 1px rgb(255, 255, 255) inset;
+      }
+
+      .rectangle {
+        width: 80%;
+        height: 200px;
+        background-color: rgba(244, 179, 89, 0.699);
+        border-radius: 15px;
+        box-shadow: 5px 5px 5px rgb(255, 255, 255) inset;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card active">
+        <div class="rectangle"></div>
+        <div class="content">
+          <div class="circle"></div>
+          <div class="lines">
+            <div class="line1"></div>
+            <div class="line"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="rectangle"></div>
+        <div class="content">
+          <div class="circle"></div>
+          <div class="lines">
+            <div class="line1"></div>
+            <div class="line"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="rectangle"></div>
+        <div class="content">
+          <div class="circle"></div>
+          <div class="lines">
+            <div class="line1"></div>
+            <div class="line"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="rectangle"></div>
+        <div class="content">
+          <div class="circle"></div>
+          <div class="lines">
+            <div class="line1"></div>
+            <div class="line"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="rectangle"></div>
+        <div class="content">
+          <div class="circle"></div>
+          <div class="lines">
+            <div class="line1"></div>
+            <div class="line"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="rectangle"></div>
+        <div class="content">
+          <div class="circle"></div>
+          <div class="lines">
+            <div class="line1"></div>
+            <div class="line"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const cards = document.querySelectorAll(".card");
+      const container = document.querySelector(".container");
+
+      let isDragging = false;
+      let startY;
+      let scrollTop;
+
+      // Scroll behavior
+      container.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        startY = e.pageY - container.offsetTop;
+        scrollTop = container.scrollTop;
+      });
+
+      container.addEventListener("mouseleave", () => {
+        isDragging = false;
+      });
+
+      container.addEventListener("mouseup", () => {
+        isDragging = false;
+      });
+
+      container.addEventListener("mousemove", (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const y = e.pageY - container.offsetTop;
+        const walk = (y - startY) * 2; // Adjust scrolling speed
+        container.scrollTop = scrollTop - walk;
+      });
+
+      // Update active card based on scroll
+      container.addEventListener("scroll", () => {
+        cards.forEach((card) => {
+          const rect = card.getBoundingClientRect();
+          const cardMiddle = rect.top + rect.height / 2;
+          const windowMiddle = window.innerHeight / 2;
+          const offset = Math.abs(cardMiddle - windowMiddle);
+
+          if (offset < 100) {
+            card.classList.add("active");
+          } else {
+            card.classList.remove("active");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
